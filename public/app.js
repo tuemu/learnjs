@@ -3,7 +3,9 @@ var learnjs = {};
 
 learnjs.problemView = function(problemNumber) {
     var title = 'Problem #' + problemNumber + ' Coming soon!';
-    return $('<div class="problem-view">').text(title);
+    var view = $('.templates .problem-view').clone();
+    view.find('.title').text(title)
+    return view;
 }
 
 learnjs.showView = function(hash) {
@@ -19,14 +21,16 @@ learnjs.showView = function(hash) {
 
 learnjs.appOnReady = function() {
     window.onhashchange = function() {
-        console.log('showView is called by onhashchange');
         learnjs.showView(window.location.hash);
     };
-    console.log('showView is called by OUTOF onhashchange');
     learnjs.showView(window.location.hash);
 }
 
 /**
+learnjs.problemView = function(problemNumber) {
+var view = $('.templates .problem-view').clone(); view.find('.title').text('Problem #' + problemNumber + ' Coming soon!'); return view;
+}
+
 
 learnjs.appOnReady = function() { window.onhashchange = function() {
 learnjs.showView(window.location.hash); };
