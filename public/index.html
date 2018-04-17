@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset='utf-8'>
+    <meta name="google-signin-client_id" content="149146405005-3m54i9h95ovkb45tor7ojvgr3oaa8374.apps.googleusercontent.com" />
     <title>Learn JS!</title>
     <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css'>
@@ -34,8 +35,9 @@
       .hover-links a:hover { text-decoration: underline; }
       .nav-container { padding-left: 40px; background: #666;}
       .nav-container a { color: white; }
-
+      .navbar-padding { padding-top: 7px; display: inline-block;}
     </style>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
   </head>
   <body>
     <div class='markup'>
@@ -44,6 +46,12 @@
           <li><a class='text-lg' href="#">LearnJS</a></li>
           <li><a href="#problem-1">Start</a></li>
         </ul>
+        <div class='four columns'>
+          <span class='navbar-padding u-pull-right'>
+            <span class="g-signin2" data-onsuccess="googleSignIn"></span>
+          </span>
+
+        </div>
       </div>
       <div class='view-container container'>
       </div>
