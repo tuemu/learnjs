@@ -15,11 +15,16 @@ learnjs.problems = [
     }
 ];
 
+
+learnjs.identity = new $.Deferred();
+
+
 learnjs.showView = function(hash) {
     console.log('** learnjs.showView is started.**');
     
     var routes = {
         '#problem': learnjs.problemView,
+        '#profile': learnjs.profileView,
         '#': learnjs.landingView,
         '': learnjs.landingView
     };
@@ -100,10 +105,12 @@ learnjs.template = function(name) {
 
 
 learnjs.appOnReady = function() {
+    console.log('learnjs.appOnReady is stared.');
     window.onhashchange = function() {
         learnjs.showView(window.location.hash);
     };
     learnjs.showView(window.location.hash);
+    learnjs.identity.done(learnjs.addProfileLink);
 }
 
 learnjs.applyObject = function(obj, elem) {
@@ -128,7 +135,10 @@ learnjs.triggerEvent = function(name, args) {
 }
 
 function googleSignIn(googleUser) {
+    console.log('googleSignIn(googleUser) is started.');
     var id_token = googleUser.getAuthResponse().id_token;
+    console.log('**id_token**:  ' + id_token);
+    console.log('learnjs.poolId:  ' + learnjs.poolId);
     AWS.config.update({
         region: 'us-east-1',
         credentials: new AWS.CognitoIdentityCredentials({
@@ -138,9 +148,17 @@ function googleSignIn(googleUser) {
             }
         })
     })
+    learnjs.awsRefresh().then(function(id) {
+        learnjs.identity.resolve({
+            id: id,
+            email: googleUser.getBasicProfile().getEmail(),
+            refresh: refresh
+        });
+    });
 }
 
 function refresh() {
+    console.log('refresh() is started.');
     return gapi.auth2.getAuthInstance().signIn({
         prompt: 'login'
     }).then(function(userUpdate) {
@@ -152,26 +170,39 @@ function refresh() {
 }
 
 learnjs.awsRefresh = function() {
+    console.log('learnjs.awsRefresh !!!!!');
     var deferred = new $.Deferred();
     AWS.config.credentials.refresh(function(err) {
         if (err) {
+            console.log('AWS.config.credentials.refresh is err  !!!!!');
             deferred.reject(err);
         } else {
+            console.log('AWS.config.credentials.refresh is GREEEAT  !!!!!');
             deferred.resolve(AWS.config.credentials.identityId);
         }
     });
     return deferred.promise();
 }
 
-learnjs.identity = new $.Deferred();
 
-learnjs.awsRefresh().then(function(id) {
-    learnjs.identity.resolve({
-        id: id,
-        email: googleUser.getBasicProfile().getEmail(),
-        refresh: refresh
+
+learnjs.profileView = function() {
+    console.log('learnjs.profileView is started.')
+    var view = learnjs.template('profile-view');
+    learnjs.identity.done(function(identity){
+        view.find('.email').text(identity.email);
     });
-});
+    return view;
+}
+
+learnjs.addProfileLink = function(profile) {
+    console.log('learnjs.addProfileLink is started.')
+    var link = learnjs.template('profile-link');
+    console.log('profile.email: '+ profile.email)
+    link.find('a').text(profile.email);
+    $('.signin-bar').prepend(link);
+}
+
 /**
 learnjs.problemView = function(data) {
 var problemNumber = parseInt(data, 10);
